@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from scipy.stats import skew
+import time
 
 def analyze_csv(file):
     # Read the CSV file
@@ -82,10 +83,22 @@ st.write("🦸‍♂️🛠️ Visa data superhero tool engineered by Pulse AI �
 uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
 if uploaded_file is not None:
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    progress_bar.progress(10)
+    status_text.text("Reading CSV file...")
+    
     results = analyze_csv(uploaded_file)
+    progress_bar.progress(30)
+    status_text.text("Analyzing data format...")
+    
     (head, data_format, missing_info, duplicate_count, duplicate_columns, basic_stats, 
      row_count, qualitative_attributes, quantitative_attributes, summary_reports_qual, 
      summary_reports_quant, analysis_results) = results
+    
+    progress_bar.progress(50)
+    status_text.text("Generating summaries and statistics...")
     
     st.subheader("First Few Rows")
     st.dataframe(head)
@@ -107,7 +120,8 @@ if uploaded_file is not None:
         st.subheader("Basic Statistics")
         st.dataframe(basic_stats)
 
-    st.divider()
+    progress_bar.progress(70)
+    status_text.text("Summarizing qualitative attributes...")
     
     # Additional Information
     st.subheader("Additional Information")
@@ -120,7 +134,8 @@ if uploaded_file is not None:
     st.subheader("Quantitative Attributes")
     st.write(", ".join(quantitative_attributes))
 
-    st.divider()
+    progress_bar.progress(90)
+    status_text.text("Summarizing quantitative attributes...")
     
     # Summary reports for qualitative attributes
     st.subheader("Summary Reports for Qualitative Attributes")
@@ -141,3 +156,7 @@ if uploaded_file is not None:
     for analysis, result in analysis_results.items():
         st.markdown(f"**{analysis}**")
         st.dataframe(result)
+    
+    progress_bar.progress(100)
+    status_text.text("Analysis complete!")
+    progress_bar.empty()
