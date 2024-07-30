@@ -63,7 +63,7 @@ if card_data and transaction_data and redemption_data:
     
     st.write("#")
     st.write("#")
-    
+
     fig2 = px.pie(value_counts, values="Unique Cardholder Count", names="Card Count", title="Cardholder Distribution by Card Count", hole=0.5)
     st.plotly_chart(fig2)
     st.plotly_chart(daily_cardholder_enrollment(card_df))
