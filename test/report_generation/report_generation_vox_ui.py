@@ -30,12 +30,15 @@ def get_file_created_time(uploaded_file):
     
     return created_time_jp
 
-# st.sidebar.header('Upload Data Files')
-# card_data = st.sidebar.file_uploader("Upload Card Data", type=['csv'])
-# transaction_data = st.sidebar.file_uploader("Upload Transaction Data", type=['csv'])
-# redemption_data = st.sidebar.file_uploader("Upload Redemption Data", type=['csv'])
+# Initialize session state variables if they don't exist
+if 'generated_cardholder' not in st.session_state:
+    st.session_state['generated_cardholder'] = ''
+if 'generated_transactions' not in st.session_state:
+    st.session_state['generated_transactions'] = ''
+if 'generated_redemptions' not in st.session_state:
+    st.session_state['generated_redemptions'] = ''
 
-tab1, tab2 = st.sidebar.tabs(["Upload Data Files", "Add Dummy Inputs"])
+tab1, tab2 = st.sidebar.tabs(["Upload Data Files", "Generated Time"])
 
 # First tab for uploading data files
 with tab1:
@@ -44,12 +47,20 @@ with tab1:
     transaction_data = st.file_uploader("Upload Transaction Data", type=['csv'])
     redemption_data = st.file_uploader("Upload Redemption Data", type=['csv'])
 
-# Second tab for adding dummy inputs
+
+def update_ui(input_text):
+    st.write(f"You typed: {input_text}")
+    
+    
 with tab2:
-    st.header('Add Dummy Inputs')
-    generated_cardholder= st.text_input("generated_cardholder")
-    generated_transactions = st.text_input("generated_transactions ")
-    generated_redemptions = st.text_input("generated_redemptions ")
+    st.header('Data Source Generated Time ')
+
+    # Update session state directly for real-time effect
+    st.session_state['generated_cardholder'] = st.text_input("Generated Cardholder Time", value=st.session_state['generated_cardholder'])
+    st.session_state['generated_transactions'] = st.text_input("Generated Transactions Time", value=st.session_state['generated_transactions'])
+    st.session_state['generated_redemptions'] = st.text_input("Generated Redemptions Time", value=st.session_state['generated_redemptions'])
+
+    st.markdown('[Time Converter](https://savvytime.com/converter/sri-lanka-colombo-to-japan-ueno-ebisumachi)')
 
 
 if card_data and transaction_data and redemption_data:
@@ -68,20 +79,19 @@ if card_data and transaction_data and redemption_data:
     # Get the current date
     current_date = datetime.now().strftime("%B %d, %Y")
 
-    st.image('./other/assets/banner+pulse+id.png')  # Replace 'path_to_your_image.jpg' with the actual path to your image
-
-    # Display the title with the current date
-    st.title(f"VISA Japan Campaign Analysis {current_date}")
-    # st.subheader("**Report generated Date: 2024 July 25**") 
+    st.image('./other/assets/banner+pulse+id.png')  
     
-    # st.header(f"**Card and Cardholder Information Analysis (Generated at: {formatted_time})**")
-    st.header(f"**Card and Cardholder Information Analysis (Generated at: {generated_cardholder })**")
-
+    st.title(f"VISA Japan Campaign Analysis {current_date}")
+    
+    header_text = f"**Card and Cardholder Information Analysis (Generated at: {st.session_state['generated_cardholder']} JST)**" if 'generated_cardholder' in st.session_state and st.session_state['generated_cardholder'] else "Card and Cardholder Information Analysis"
+    st.header(header_text)
+        
+        
     st.write(f"Number of unique Cardholders: **{num_unique_cardholders}**")
     st.write(f"Number of unique Cards: **{num_unique_cards}**")
 
     st.header("Card Count Analysis (Cards per Cardholder)")
-    st.table(value_counts)
+    st.dataframe(value_counts, use_container_width=True)
     
     # SPACING
     st.write("#")
@@ -95,31 +105,40 @@ if card_data and transaction_data and redemption_data:
     st.write("#")
 
     st.header(f"Top Issuer Analysis")
-    #  (Generated at: {formatted_time}) Removed this becuase same time as cardholders
     grouped_df = top_issuers.top_issuer_analysis(card_df=card_df)
-    st.dataframe(grouped_df)
+    st.dataframe(grouped_df, use_container_width=True)
     fig3 = px.bar(grouped_df, x="card_id_count", y="Bank Name", orientation='h', title="Card ID Counts by Top Issuers")
     st.plotly_chart(fig3, use_container_width=True)
 
     # SPACING
     st.write("#")
 
-    st.header(f"Transaction Analysis (Generated at: {generated_transactions})")
+    header_text = f"**Transaction Analysis (Generated at: {st.session_state['generated_transactions']} JST)**" if 'generated_transactions' in st.session_state and st.session_state['generated_transactions'] else "Transaction Analysis"
+    st.header(header_text)
+
+    # st.header(f"Transaction Analysis (Generated at: {st.session_state['generated_transactions']} JST)")
     transaction_metrics_df = transaction_metrics(transaction_df)
-    st.dataframe(transaction_metrics_df)
+    st.dataframe(transaction_metrics_df, use_container_width=True)
 
     # SPACING
     st.write("#")
 
-    st.header(f"Redemption Analysis (Generated at: {generated_redemptions})")
+    header_text = f"**Redemption Analysis (Generated at: {st.session_state['generated_redemptions']} JST)**" if 'generated_redemptions' in st.session_state and st.session_state['generated_redemptions'] else "Redemption Analysis"
+    st.header(header_text)
+
+    # st.header(f"Redemption Analysis (Generated at: {st.session_state['generated_redemptions']} JST)")
     redemption_metrics_df = redemption_metrics(redemption_df)
-    st.dataframe(redemption_metrics_df)
+    st.dataframe(redemption_metrics_df, use_container_width=True)
     st.plotly_chart(daily_redemptions_value(redemption_df))
     st.plotly_chart(daily_redemptions_count(redemption_df))
 
-    st.header(f"Merchant-wise Total Redemption Analysis (Generated at: {generated_redemptions})")
+
+    header_text = f"**Merchant-wise Total Redemption Analysis (Generated at: {st.session_state['generated_redemptions']} JST)**" if 'generated_redemptions' in st.session_state and st.session_state['generated_redemptions'] else "Merchant-wise Total Redemption"
+    st.header(header_text)
+    # st.header(f"Merchant-wise Total Redemption Analysis (Generated at: {st.session_state['generated_redemptions']})")
     merchant_redemptions_df = merchant_wise_redemption(redemption_df)
-    st.table(merchant_redemptions_df)
+    st.dataframe(merchant_redemptions_df, use_container_width=True)
+    
     # SPACING
     st.write("#")
     st.write("#")
