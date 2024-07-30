@@ -7,6 +7,8 @@ from functionalities import top_issuers
 from datetime import datetime
 import pytz
 import os
+import plotly.express as px
+
 
 def get_file_created_time(csv_file_path):
     created_time = os.path.getctime(csv_file_path)
@@ -34,17 +36,35 @@ if card_data and transaction_data and redemption_data:
 
     a_time = get_file_created_time("../../data/visa_3/Visa Japan Cards.csv")
     formatted_time = a_time.strftime("%I:%M %p")
-    st.title("VISA Japan Campaign Analysis July 25 2024")
-    st.markdown("**Report generated Date: 2024 July 25**")
-    st.markdown("**Card and Cardholder Information Analysis (Generated at: 12:13 pm JST)**")
+    
+    # Get the current date
+    current_date = datetime.now().strftime("%B %d, %Y")
+
+    st.image('./other/assets/banner+pulse+id.png')  # Replace 'path_to_your_image.jpg' with the actual path to your image
+
+    # Display the title with the current date
+    st.title(f"VISA Japan Campaign Analysis {current_date}")
+    # st.title("VISA Japan Campaign Analysis July 25 2024")
+    st.subheader("**Report generated Date: 2024 July 25**") 
+    
+    st.header("**Card and Cardholder Information Analysis (Generated at: 12:13 pm JST)**")
     st.write(f"Number of unique Cardholders: **{num_unique_cardholders}**")
     st.write(f"Number of unique Cards: **{num_unique_cards}**")
 
     st.header("Card Count Analysis (Cards per Cardholder)")
-    st.dataframe(value_counts)
+    # st.dataframe(value_counts)
+    st.table(value_counts)
+    
+    # SPACING
+    st.write("#")
+    st.write("#")
+
     fig2 = px.pie(value_counts, values="unique_cardholder_count", names="card_count", title="Cardholder Distribution by Card Count", hole=0.5)
     st.plotly_chart(fig2)
     st.plotly_chart(daily_cardholder_enrollment(card_df))
+
+    # SPACING
+    st.write("#")
 
     st.header("Top Issuer Analysis (Generated at: 12:13 pm JST)")
     grouped_df = top_issuers.top_issuer_analysis(card_df=card_df)
@@ -52,9 +72,15 @@ if card_data and transaction_data and redemption_data:
     fig3 = px.bar(grouped_df, x="card_id_count", y="Bank Name", orientation='h', title="Card ID Counts by Top Issuers")
     st.plotly_chart(fig3, use_container_width=True)
 
+    # SPACING
+    st.write("#")
+
     st.header("Transaction Analysis (Generated at: 12:13 pm JST)")
     transaction_metrics_df = transaction_metrics(transaction_df)
     st.dataframe(transaction_metrics_df)
+
+    # SPACING
+    st.write("#")
 
     st.header("Redemption Analysis (Generated at: 12:13 pm JST)")
     redemption_metrics_df = redemption_metrics(redemption_df)
@@ -63,7 +89,14 @@ if card_data and transaction_data and redemption_data:
     st.plotly_chart(daily_redemptions_count(redemption_df))
 
     st.header("Merchant-wise Total Redemption Analysis (Generated at: 12:14 pm JST)")
+    # st.write("columns redemption_df", redemption_df.columns)
     merchant_redemptions_df = merchant_wise_redemption(redemption_df)
     st.table(merchant_redemptions_df)
+    # SPACING
+    st.write("#")
+    st.write("#")
+    st.write("#")
+    st.write("#")
+    
     fig = px.bar(merchant_redemptions_df, x="Merchant Name", y="Sum of cashback", title="Total Redemption by Merchants")
     st.plotly_chart(fig)
