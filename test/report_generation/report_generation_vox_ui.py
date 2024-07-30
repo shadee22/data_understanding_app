@@ -69,7 +69,7 @@ if card_data and transaction_data and redemption_data:
     st.write(f"Number of unique Cardholders: **{num_unique_cardholders}**")
     st.write(f"Number of unique Cards: **{num_unique_cards}**")
     st.header("Card Count Analysis (Cards per Cardholder)")
-    st.dataframe(value_counts, use_container_width=True)
+    st.dataframe(value_counts, use_container_width=True, hide_index=True)
     st.write("#")
     st.write("#")
     fig2 = px.pie(value_counts, values="unique_cardholder_count", names="card_count", title="Cardholder Distribution by Card Count", hole=0.5)
@@ -79,9 +79,14 @@ if card_data and transaction_data and redemption_data:
 
     st.header("Top Issuer Analysis")
     grouped_df = top_issuers.top_issuer_analysis(card_df=card_df)
-    st.dataframe(grouped_df, use_container_width=True)
+    grouped_df = grouped_df.sort_values(by='card_id_count', ascending=True)
+    st.dataframe(grouped_df, use_container_width=True, hide_index=True)
+    # st.table(grouped_df.reset_index(drop=True))
+
     fig3 = px.bar(grouped_df, x="card_id_count", y="Bank Name", orientation='h', title="Card ID Counts by Top Issuers")
     st.plotly_chart(fig3, use_container_width=True)
+
+      
 
     
     st.write("#")
@@ -91,21 +96,23 @@ if card_data and transaction_data and redemption_data:
     
     st.header(generate_header_text("Transaction Analysis", 'generated_transactions'))
     transaction_metrics_df = transaction_metrics(transaction_df)
-    st.dataframe(transaction_metrics_df, use_container_width=True)
+    st.dataframe(transaction_metrics_df, use_container_width=True, hide_index=True)
     st.write("#")
 
     st.header(generate_header_text("Redemption Analysis", 'generated_redemptions'))
     redemption_metrics_df = redemption_metrics(redemption_df)
-    st.dataframe(redemption_metrics_df, use_container_width=True)
+    st.dataframe(redemption_metrics_df, use_container_width=True, hide_index=True)
     st.plotly_chart(daily_redemptions_value(redemption_df))
     st.plotly_chart(daily_redemptions_count(redemption_df))
 
     st.header(generate_header_text("Merchant-wise Total Redemption Analysis", 'generated_redemptions'))
     merchant_redemptions_df = merchant_wise_redemption(redemption_df)
-    st.dataframe(merchant_redemptions_df, use_container_width=True)
+    st.dataframe(merchant_redemptions_df, use_container_width=True, hide_index=True)
     st.write("#")
     st.write("#")
     st.write("#")
     st.write("#")
+    
+    
     fig = px.bar(merchant_redemptions_df, x="Merchant Name", y="Sum of cashback", title="Total Redemption by Merchants")
     st.plotly_chart(fig)
