@@ -15,11 +15,11 @@ def transaction_metrics(df):
             'Authorized & Eligible Average Cashback'
         ],
         'Value': [
-            str(int(df['transaction_id'].nunique())),
-            '¥' + str(int(df['transaction_amount'].sum())),
-            '¥' + str(round(df['transaction_amount'].mean(), 2)),
-            '¥' + str(int(df['cashback_amount'].sum())),
-            '¥' + str(round(df['cashback_amount'].mean(), 2))
+            f"{df['transaction_id'].nunique():,}",
+            '¥' + f"{df['transaction_amount'].sum():,}",
+            '¥' + f"{round(df['transaction_amount'].mean(), 2):,}",
+            '¥' + f"{df['cashback_amount'].sum():,}",
+            '¥' + f"{round(df['cashback_amount'].mean(), 2):,}"
         ]
     }
     return pd.DataFrame(metrics_data)

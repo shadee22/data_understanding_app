@@ -1,8 +1,10 @@
 import streamlit as st
 
-def create_spacer(num_spacers=1):
+def spacer(num_spacers=1):
     for _ in range(num_spacers):
-        st.write("")
+        st.write("#")
+        st.write("#")
+
 
 def create_horizontal_line():
     st.markdown("---")

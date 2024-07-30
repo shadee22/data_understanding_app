@@ -13,9 +13,9 @@ def redemption_metrics(df):
             'Average Cashback Given'
         ],
         'Value': [
-            str(int(df['transaction_id'].nunique())),
-            '¥' + str(int(df['cashback_amount'].sum())),
-            '¥' + str(round(df['cashback_amount'].mean(), 2))
+            f"{df['transaction_id'].nunique():,}",
+            '¥' + f"{df['cashback_amount'].sum():,}",
+            '¥' + f"{round(df['cashback_amount'].mean(), 2):,}"
         ]
     }
     return pd.DataFrame(metrics_data)
